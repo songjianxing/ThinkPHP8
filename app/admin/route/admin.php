@@ -10,8 +10,7 @@
 // +----------------------------------------------------------------------
 use think\facade\Route;
 
-Route::get('think', function () {
-    return 'hello,ThinkPHP6!';
+Route::group('/admin', function () {
+    // 基础设置获取
+    Route::get('/list', '/admin/Admin/list');
 });
-
-Route::get('hello/:name', 'index/hello');

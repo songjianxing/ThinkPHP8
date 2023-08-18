@@ -13,11 +13,6 @@ use think\exception\ValidateException;
  */
 abstract class BaseController
 {
-    /**
-     * Request实例
-     * @var Request
-     */
-    protected Request $request;
 
     /**
      * 应用实例
@@ -26,16 +21,29 @@ abstract class BaseController
     protected App $app;
 
     /**
-     * 是否批量验证
-     * @var bool
+     * 服务
+     * @var object
      */
-    protected bool $batchValidate = false;
+    protected object $service;
+
+    /**
+     * Request实例
+     * @var Request
+     */
+    protected Request $request;
 
     /**
      * 控制器中间件
      * @var array
      */
     protected array $middleware = [];
+
+    /**
+     * 是否批量验证
+     * @var bool
+     */
+    protected bool $batchValidate = false;
+
 
     /**
      * 构造方法
@@ -51,7 +59,10 @@ abstract class BaseController
         $this->initialize();
     }
 
-    // 初始化
+    /**
+     *  初始化
+     * @return void
+     */
     protected function initialize()
     {
     }
@@ -92,5 +103,4 @@ abstract class BaseController
 
         return $v->failException(true)->check($data);
     }
-
 }

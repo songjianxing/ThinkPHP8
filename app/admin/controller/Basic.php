@@ -5,10 +5,11 @@ namespace app\admin\controller;
 
 use basics\BaseController;
 
-class Basics extends BaseController
+class Basic extends BaseController
 {
 
     public function initialize()
     {
+
     }
 }

@@ -27,7 +27,8 @@
 		"topthink/think-multi-app": "^1.0",
 		"topthink/think-queue": "^3.0",
 		"hg/apidoc": "^5.2",
-		"firebase/php-jwt": "^6.8"
+		"firebase/php-jwt": "^6.8",
+		"ext-curl": "*"
 	},
 	"require-dev": {
 		"symfony/var-dumper": ">=4.2",
