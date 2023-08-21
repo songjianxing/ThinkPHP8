@@ -288,17 +288,16 @@ class BasicModel extends Model
     public function checkUnique($where, $id = 0, $pk = 'id'): array
     {
         try {
-
             if (empty($id)) {
                 $has = $this->field($pk)->where($where)->find();
             } else {
                 $has = $this->field($pk)->where($where)->where($pk, '<>', $id)->find();
             }
         } catch (\Exception $e) {
-            return dataReturn(-1, $e->getMessage());
+            return failed($e->getMessage());
         }
 
-        return dataReturn(0, '获取成功', $has);
+        return $has;
     }
 //
 //    /**

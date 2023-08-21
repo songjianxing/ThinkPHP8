@@ -7,6 +7,7 @@ use app\model\AdminModel;
 use app\admin\validate\AdminValidate;
 use think\exception\ValidateException;
 use think\facade\Db;
+use think\facade\Event;
 
 class AdminService extends BasicService
 {
@@ -22,15 +23,20 @@ class AdminService extends BasicService
      * @param $param
      * @return array
      */
-    public function getList($param): array
+    public function list($param): array
     {
+        event('AdminLog');
+        $this->setParam($param);
+        $limit = $this->getParam('limit', 0);
+        $user_name = $this->getParam('username', '');
+
         $where = [];
-        if (!empty($param['username'])) {
-            $where[] = ['username', '=', $param['username']];
+        if (!empty($user_name)) {
+            $where[] = ['username', '=', $user_name];
         }
         try {
             $list = $this->model->with('role')->where($where)
-                ->order('id desc')->paginate($param['limit'])
+                ->order('id desc')->paginate($limit)
                 ->toArray();
             return success($list);
         } catch (\Exception $e) {
@@ -42,31 +48,28 @@ class AdminService extends BasicService
      * 添加管理员
      * @param $param
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save($param): array
     {
+        $this->setParam($param);
+        $user_name = $this->getParam('username', '');
         try {
             validate(AdminValidate::class)->scene('save')->check($param);
         } catch (ValidateException $e) {
             return failed($e->getError());
         }
         // 检查唯一
-        $has = $this->model->where(['username' => $param['username']])->find();
-        var_dump(
-            $has
-        );
-die;
+        $has = $this->model->where(['username' => $user_name])->find();
+        if (!empty($has)) return failed('该登录名已存在');
 
-        $has = $this->model->checkUnique(['username' => $param['username']])['data'];
-        if (!empty($has)) {
-            return dataReturn(-2, '该登录名已存在');
-        }
-
-        $param['create_time'] = now();
         $param['salt'] = uniqid();
-        $param['password'] = makePassword($param['password'], $param['salt']);
+        $param['create_time'] = nowDate();
+        $param['password'] = makePass($param['password'], $param['salt']);
 
-        $res = $adminModel->insertOne($param);
+        $res = $this->model->insertOne($param);
         if ($res['code'] != 0) {
             return $res;
         }
@@ -79,7 +82,7 @@ die;
      * @param $param
      * @return array
      */
-    public function editAdmin($param): array
+    public function edit($param): array
     {
         try {
             validate(AdminValidate::class)->scene('edit')->check($param);
@@ -116,7 +119,7 @@ die;
      * @param $id
      * @return array
      */
-    public function delAdmin($id): array
+    public function del($id): array
     {
         if ($id == 0) {
             return dataReturn(-1, '不可以删除超级管理员');

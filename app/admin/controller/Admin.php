@@ -2,7 +2,6 @@
 
 namespace app\admin\controller;
 
-use JetBrains\PhpStorm\NoReturn;
 use think\App;
 use think\response\Json;
 use app\admin\services\AdminService;
@@ -22,7 +21,7 @@ class Admin extends Basic
      */
     public function list(): Json
     {
-        $data = $this->service->getList(input('param.'));
+        $data = $this->service->list(input());
         return json($data);
 
     }
@@ -43,7 +42,7 @@ class Admin extends Basic
      */
     public function edit(): Json
     {
-        $data = $this->service->editAdmin(input('post.'));
+        $data = $this->service->edit(input('post.'));
         return json($data);
     }
 
@@ -53,7 +52,7 @@ class Admin extends Basic
      */
     public function del(): Json
     {
-        $data = $this->service->delAdmin(input('param.id'));
+        $data = $this->service->del(input('param.id'));
         return json($data);
     }
 }

@@ -3,9 +3,9 @@
 	"description": "the new thinkphp framework",
 	"type": "project",
 	"keywords": [
-		"framework",
+		"ORM",
 		"thinkphp",
-		"ORM"
+		"framework"
 	],
 	"homepage": "https://www.thinkphp.cn/",
 	"license": "Apache-2.0",
@@ -21,14 +21,14 @@
 	],
 	"require": {
 		"php": ">=8.0.0",
-		"topthink/framework": "^8.0",
-		"topthink/think-orm": "^3.0",
-		"topthink/think-filesystem": "^2.0",
-		"topthink/think-multi-app": "^1.0",
-		"topthink/think-queue": "^3.0",
+		"ext-curl": "*",
 		"hg/apidoc": "^5.2",
 		"firebase/php-jwt": "^6.8",
-		"ext-curl": "*"
+		"topthink/framework": "^8.0",
+		"topthink/think-orm": "^3.0",
+		"topthink/think-queue": "^3.0",
+		"topthink/think-multi-app": "^1.0",
+		"topthink/think-filesystem": "^2.0"
 	},
 	"require-dev": {
 		"symfony/var-dumper": ">=4.2",
@@ -37,7 +37,8 @@
 	"autoload": {
 		"psr-4": {
 			"app\\": "app",
-			"basics\\": "basics"
+			"basics\\": "basics",
+			"helper\\": "helper"
 		},
 		"psr-0": {
 			"": "extend/"
