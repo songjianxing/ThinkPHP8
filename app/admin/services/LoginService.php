@@ -34,22 +34,26 @@ class LoginService extends BasicService
 
         // TODO 验证码展示注释 后续打开
         //$captcha = new Captcha();
-        //if (!$captcha->check($code, $key)) return failed('验证码错误');
+        //if (!$captcha->check($code, $key)) return failed('Verification code error');
 
         // 检查用户是否存在
         $user = Db::name('admin')->where(['username' => $username])->find();
-        if (!$user) return failed('用户名不存在');
+        if (!$user) return failed('The account does not exist');
 
         // 验证密码是否正确
-        if (makePass($password, $user['salt']) != $user['password']) return failed('密码错误');
+        if (makePass($password, $user['salt']) != $user['password']) {
+            return failed('Password error');
+        }
 
         // 验证用户是否禁用
-        if ($user['status'] == 2) return failed('该账号已被禁用');
+        if ($user['status'] == 2){
+            return failed('This account has been disabled');
+        }
 
         // 验证角色是否禁用
         if ($user['role_id'] != 1) {
             $role = Db::name('role')->where(['id' => $user['role_id'], 'status' => 1])->find();
-            if (!$role) return failed('该账号角色已被禁用');
+            if (!$role) return failed('The account role has been disabled');
         }
 
         $token = setJWT([

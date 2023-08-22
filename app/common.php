@@ -12,7 +12,7 @@ use think\facade\Log;
  */
 function failed(string $msg = 'failed', int $code = 0): array
 {
-    return ['code' => $code, 'msg' => $msg, 'data' => new stdClass()];
+    return ['code' => $code, 'msg' => lang($msg), 'data' => new stdClass()];
 }
 
 /**

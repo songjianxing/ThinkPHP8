@@ -70,13 +70,13 @@ class AdminService extends BasicService
 
         // 检查唯一
         $user = $this->model->where(['username' => $user_name])->find();
-        if (!empty($user)) return failed('该登录名已存在');
+        if (!empty($user)) return failed('This account already exists');
 
         $param['salt'] = uniqid();
         $param['create_time'] = nowDate();
         $param['password'] = makePass($param['password'], $param['salt']);
         $resp = $this->model->insertGetId($param);
-        if ($resp <= 0) return failed('添加失败,请重新操作');
+        if ($resp <= 0) return failed('The operation failed, please try again');
 
         // 事件记录操作日志
         event('AdminLog');
@@ -106,7 +106,7 @@ class AdminService extends BasicService
 
         // 检查唯一
         $user = $this->model->where(['id' => $id])->find();
-        if (!$user) return failed('该用户不存在');
+        if (!$user) return failed('The account does not exist');
 
         // 密码处理
         if (empty($param['password'])) {
@@ -117,7 +117,7 @@ class AdminService extends BasicService
         }
         $param['update_time'] = nowDate();
         $resp = $this->model->where(['id' => $id])->update($param);
-        if ($resp <= 0) return failed('更新失败,请重新操作');
+        if ($resp <= 0) return failed('The operation failed, please try again');
 
         return success();
     }
@@ -138,12 +138,12 @@ class AdminService extends BasicService
         // 参数提取
         $this->setParam($param);
         $id = $this->getParam('id', '');
-        if ($id == 1) return failed('不可以删除超级管理员');
+        if ($id == 1) return failed('Cannot delete super administrator');
 
         $param['is_delete'] = 1;
         $param['update_time'] = nowDate();
         $resp = $this->model->where(['id' => $id])->update($param);
-        if ($resp <= 0) return failed('删除失败,请重新操作');
+        if ($resp <= 0) return failed('The operation failed, please try again');
         return success();
     }
 }

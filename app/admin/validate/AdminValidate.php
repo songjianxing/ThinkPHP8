@@ -16,6 +16,23 @@ class AdminValidate extends Validate
         'username|登录账号' => 'require|alphaNum|max:55',
     ];
 
+    protected $message = [
+        'id.require' => 'admin_id_require',
+        'email' => 'admin_email_error',
+        'phone' => 'admin_phone_error',
+        'nickname.chsAlpha' => 'admin_nickname_chs_alpha',
+
+        'role_id.number' => 'admin_role_id_number',
+        'role_id.require' => 'admin_role_id_require',
+
+        'password.max' => 'admin_password_max',
+        'password.require' => 'admin_password_require',
+
+        'username.max' => 'admin_username_max',
+        'username.require' => 'admin_username_require',
+        'username.alphaNum' => 'admin_username_alpha_num',
+    ];
+
     protected $scene = [
         'edit' => ['id', 'role_id', 'username', 'email', 'phone', 'nickname'],
         'save' => ['role_id', 'username', 'password', 'email', 'phone', 'nickname'],
