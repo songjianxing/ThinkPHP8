@@ -7,11 +7,11 @@ use basics\BaseController;
 
 class Basic extends BaseController
 {
-    public function initialize()
+    public function initialize(): void
     {
         // 校验用户的权限
         $user = getJWT(getHeaderToken());
-        if (!$user) return json(failed('登录已过期,请重新登录'));
+        if (!$user) exit(json_encode(failed('登录已过期,请重新登录')));
 
         // 路径地址
         $controller = request()->controller();
@@ -24,7 +24,7 @@ class Basic extends BaseController
         // 获取权限节点对比
         $node = cache($user['id'] . '_auth_map');
         if ($user['id'] != 1 && !isset($skip[$path]) && !isset($skip["{$controller}/*"]) && !isset($node[$path])) {
-            return json(failed('您无权限操作,请联系管理员'));
+            exit(json_encode(failed('您无权限操作,请联系管理员')));
         }
     }
 }

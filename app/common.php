@@ -50,9 +50,12 @@ function setJWT($data): string
         'iat' => time(), // 签发时间
         'nbf' => time(), // 生效时间
         'data' => $data, // 加签数据
-        'iss' => 'https://www.xxx.com', // 签发者
-        'aud' => 'https://www.xxx.com', // 认证者
-        'exp' => env('jwt_exp_time', 604800), // 过期时间  7天后的时间戳
+        // 签发者
+        'iss' => 'https://www.xxx.com',
+        // 认证者
+        'aud' => 'https://www.xxx.com',
+        // 过期时间  7天后的时间戳
+        'exp' => (time() + env('jwt_exp_time', 604800)),
     ];
 
     return $jwt::encode($token, env('jwt_exp_key', ''), 'HS256');

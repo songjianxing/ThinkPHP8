@@ -11,6 +11,12 @@
 use think\facade\Route;
 
 Route::group('/admin', function () {
-    // 基础设置获取
+    // 获取管理员列表
     Route::get('/list', '/admin/Admin/list');
+    // 新增管理员
+    Route::post('/save', '/admin/Admin/save');
+    // 修改管理员
+    Route::put('/edit/:id', '/admin/Admin/edit');
+    // 删除管理员
+    Route::delete('/delete/:id', '/admin/Admin/delete');
 });
