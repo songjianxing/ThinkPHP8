@@ -28,7 +28,9 @@
 		"topthink/think-orm": "^3.0",
 		"topthink/think-queue": "^3.0",
 		"topthink/think-multi-app": "^1.0",
-		"topthink/think-filesystem": "^2.0"
+		"chance-fyi/operation-log": "^3.0",
+		"topthink/think-filesystem": "^2.0",
+		"ext-gd": "*"
 	},
 	"require-dev": {
 		"symfony/var-dumper": ">=4.2",

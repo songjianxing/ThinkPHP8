@@ -132,19 +132,19 @@ class BasicModel extends Model
 //     * @param $param
 //     * @return array
 //     */
-//    public function insertOne($param): array
-//    {
-//        try {
-//
-//            $id = $this->insertGetId($param);
-//            (new AdminLogService())->write([], OperationLog::getLog());
-//        } catch (\Exception $e) {
-//            return dataReturn(-1, $e->getMessage());
-//        }
-//
-//        return dataReturn(0, '添加成功', $id);
-//    }
-//
+    public function insertOne($param): array
+    {
+        try {
+
+            $id = $this->insertGetId($param);
+            (new AdminLogService())->write([], OperationLog::getLog());
+        } catch (\Exception $e) {
+            return dataReturn(-1, $e->getMessage());
+        }
+
+        return dataReturn(0, '添加成功', $id);
+    }
+
 //    /**
 //     * 批量添加
 //     * @param $param

@@ -10,7 +10,7 @@ use think\facade\Log;
  * @param int $code
  * @return array
  */
-function failed(string $msg = 'fail', int $code = 0): array
+function failed(string $msg = 'failed', int $code = 0): array
 {
     return ['code' => $code, 'msg' => $msg, 'data' => new stdClass()];
 }
@@ -50,12 +50,12 @@ function setJWT($data): string
         'iat' => time(), // 签发时间
         'nbf' => time(), // 生效时间
         'data' => $data, // 加签数据
-        'iss' => 'https://sapril.com', // 签发者
-        'aud' => 'https://sapril.com', // 认证者
+        'iss' => 'https://www.xxx.com', // 签发者
+        'aud' => 'https://www.xxx.com', // 认证者
         'exp' => env('jwt_exp_time', 604800), // 过期时间  7天后的时间戳
     ];
 
-    return $jwt::encode($token, env('JWT_EXP_KEY', ''), 'HS256');
+    return $jwt::encode($token, env('jwt_exp_key', ''), 'HS256');
 }
 
 /**
@@ -67,7 +67,7 @@ function getJWT($token): ?array
 {
     $jwt = new JWT();
     try {
-        $jwtData = $jwt::decode($token, new Key(env('JWT_EXP_KEY', ''), 'HS256'));
+        $jwtData = $jwt::decode($token, new Key(env('jwt_exp_key', ''), 'HS256'));
         $data = (array)($jwtData->data);
     } catch (\Exception $e) {
         Log::write($e->getMessage(), 'error');
@@ -84,7 +84,7 @@ function getHeaderToken(): string
 {
     $header = request()->header();
     if (!isset($header['authorization'])) return '';
-    return substr($header['authorization'], 7);
+    return $header['authorization'];
 }
 
 /**
@@ -135,6 +135,15 @@ function crossDomain(): void
 function nowDate(): string
 {
     return date('Y-m-d H:i:s');
+}
+
+/**
+ * 获取 IP 地址
+ * @return string
+ */
+function getIP(): string
+{
+    return request()->ip();
 }
 
 /**

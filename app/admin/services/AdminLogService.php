@@ -15,33 +15,33 @@ class AdminLogService
      * @param $data
      * @return array
      */
-    public function write($param, $data): array
-    {
-        if (empty($data)) {
-            return dataReturn(0);
-        }
-
-        if (empty($param)) {
-            $userInfo = getJWT(getHeaderToken());
-            if (empty($userInfo)) {
-                return dataReturn(0);
-            }
-            $param['admin_id'] = $userInfo['id'];
-            $param['username'] = $userInfo['nickname'];
-            $param['title'] = '后台操作';
-        }
-
-        $param['url'] = request()->controller() . '/' . request()->action();
-        $param['ip'] = request()->ip();
-        $param['data'] = $data;
-        $param['user_agent'] = isset(request()->header()['user-agent']) ? request()->header()['user-agent'] : '';
-        $param['create_time'] = now();
-
-        $sysAdminLogModel = new SysAdminLog();
-        $sysAdminLogModel->insert($param);
-
-        return dataReturn(0);
-    }
+//    public function write($param, $data): array
+//    {
+//        if (empty($data)) {
+//            return dataReturn(0);
+//        }
+//
+//        if (empty($param)) {
+//            $userInfo = getJWT(getHeaderToken());
+//            if (empty($userInfo)) {
+//                return dataReturn(0);
+//            }
+//            $param['admin_id'] = $userInfo['id'];
+//            $param['username'] = $userInfo['nickname'];
+//            $param['title'] = '后台操作';
+//        }
+//
+//        $param['url'] = request()->controller() . '/' . request()->action();
+//        $param['ip'] = request()->ip();
+//        $param['data'] = $data;
+//        $param['user_agent'] = isset(request()->header()['user-agent']) ? request()->header()['user-agent'] : '';
+//        $param['create_time'] = now();
+//
+//        $sysAdminLogModel = new SysAdminLog();
+//        $sysAdminLogModel->insert($param);
+//
+//        return dataReturn(0);
+//    }
 
     /**
      * Notes: 管理员日志列表

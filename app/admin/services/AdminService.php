@@ -6,12 +6,9 @@ use think\App;
 use app\model\AdminModel;
 use app\admin\validate\AdminValidate;
 use think\exception\ValidateException;
-use think\facade\Db;
-use think\facade\Event;
 
 class AdminService extends BasicService
 {
-
     public function __construct(App $app, AdminModel $model)
     {
         parent::__construct($app);
@@ -25,7 +22,6 @@ class AdminService extends BasicService
      */
     public function list($param): array
     {
-        event('AdminLog');
         $this->setParam($param);
         $limit = $this->getParam('limit', 0);
         $user_name = $this->getParam('username', '');
@@ -54,13 +50,15 @@ class AdminService extends BasicService
      */
     public function save($param): array
     {
-        $this->setParam($param);
-        $user_name = $this->getParam('username', '');
         try {
             validate(AdminValidate::class)->scene('save')->check($param);
         } catch (ValidateException $e) {
             return failed($e->getError());
         }
+        // 参数提取
+        $this->setParam($param);
+        $user_name = $this->getParam('username', '');
+
         // 检查唯一
         $has = $this->model->where(['username' => $user_name])->find();
         if (!empty($has)) return failed('该登录名已存在');
@@ -68,13 +66,13 @@ class AdminService extends BasicService
         $param['salt'] = uniqid();
         $param['create_time'] = nowDate();
         $param['password'] = makePass($param['password'], $param['salt']);
+        $resp = $this->model->insertGetId($param);
+        if ($resp <= 0) return failed('添加失败,请重新操作');
 
-        $res = $this->model->insertOne($param);
-        if ($res['code'] != 0) {
-            return $res;
-        }
+        // 事件记录操作日志
+        event('AdminLog');
 
-        return dataReturn(0, '添加成功');
+        return success();
     }
 
     /**

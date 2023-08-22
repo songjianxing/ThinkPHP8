@@ -5,50 +5,48 @@ namespace app\admin\services;
 use app\admin\model\MenuModel;
 use app\admin\model\RoleModel;
 use app\admin\validate\MenuValidate;
+use JetBrains\PhpStorm\NoReturn;
 use think\exception\ValidateException;
+use think\facade\Db;
 
 class MenuService
 {
     /**
      * 获取我的权限菜单
-     * @param $roleId
+     * @param $role_id
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getMyMenu($roleId): array
+    public function getMyMenu($role_id): array
     {
-        $menuModel = new MenuModel();
-        $field = 'id, pid, auth, type, name, path, icon, component';
-        if ($roleId == 1) {
-
-            $menuList = $menuModel->getAllList(['status' => 1], $field, 'sort desc')['data'];
+        $order = ['sort' => 'desc'];
+        $field = ['id', 'pid', 'auth', 'type', 'name', 'path', 'icon', 'component'];
+        $menu_model = Db::name('menu')->field($field)->order($order);
+        if ($role_id == 1) {
+            $menu_model->where(['status' => 1]);
         } else {
-
-            $roleModel = new RoleModel();
-            $roleInfo = $roleModel->findOne(['id' => $roleId])['data'];
-            if (empty($roleInfo)) {
-                return dataReturn(-1, '角色信息有误');
-            }
-
-            $where[] = ['status', '=', 1];
-            $where[] = ['id', 'in', $roleInfo['rule']];
-            $menuList = $menuModel->getAllList($where, $field, 'sort desc')['data'];
+            $role_ids = Db::name('role')->where(['id' => $role_id])->value('rule');
+            $role_arr = explode(',', $role_ids);
+            $menu_model->where([['status', '=', 1], ['id', 'in', $role_arr]]);
         }
+        $menu_list = $menu_model->select()->toArray();
 
-        foreach ($menuList as $key => $vo) {
-            $menuList[$key]['meta'] = [
-                'icon' => $vo['icon'],
-                'title' => $vo['name'],
+        foreach ($menu_list as &$item) {
+            $item['meta'] = [
                 'type' => 'menu',
-                'hidden' => $vo['type'] == 2
+                'icon' => $item['icon'],
+                'title' => $item['name'],
+                'hidden' => ($item['type'] == 2)
             ];
-
-            if ($vo['pid'] == 0) {
-                unset($menuList[$key]['component']);
-            }
+            if ($item['pid'] != 0) continue;
+            unset($item['component']);
         }
 
-        return dataReturn(0, 'success', $menuList);
+        return $menu_list;
     }
+
 
     /**
      * 获取全部菜单
