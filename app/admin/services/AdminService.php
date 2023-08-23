@@ -33,11 +33,12 @@ class AdminService extends BasicService
         $where = [];
         if (!empty($user_name)) $where[] = ['username', '=', $user_name];
 
+        $order = ['id' => 'desc'];
         $field = [
             'id', 'role_id', 'username', 'nickname', 'avatar', 'email', 'phone',
             'login_failure', 'last_login_time', 'last_login_ip', 'status', 'create_time'
         ];
-        $model = $this->model->with('role')->field($field)->where($where)->order('id desc');
+        $model = $this->model->with('role')->field($field)->where($where)->order($order);
         $count = $model->count('id');
         $list = $model->page($page, $limit)->select()->toArray();
 
@@ -69,14 +70,16 @@ class AdminService extends BasicService
         $user_name = $this->getParam('username', '');
 
         // 检查唯一
-        $user = $this->model->where(['username' => $user_name])->find();
-        if (!empty($user)) return failed('This account already exists');
+        if ($this->model->where(['username' => $user_name])->find()) {
+            return failed('This account already exists');
+        }
 
         $param['salt'] = uniqid();
         $param['create_time'] = nowDate();
         $param['password'] = makePass($param['password'], $param['salt']);
-        $resp = $this->model->insertGetId($param);
-        if ($resp <= 0) return failed('The operation failed, please try again');
+        if (!$this->model->insertGetId($param)) {
+            return failed('The operation failed, please try again');
+        }
 
         // 事件记录操作日志
         event('AdminLog');
@@ -104,10 +107,6 @@ class AdminService extends BasicService
         $this->setParam($param);
         $id = $this->getParam('id', '');
 
-        // 检查唯一
-        $user = $this->model->where(['id' => $id])->find();
-        if (!$user) return failed('The account does not exist');
-
         // 密码处理
         if (empty($param['password'])) {
             unset($param['password']);
@@ -116,8 +115,9 @@ class AdminService extends BasicService
             $param['password'] = makePass($param['password'], $param['salt']);
         }
         $param['update_time'] = nowDate();
-        $resp = $this->model->where(['id' => $id])->update($param);
-        if ($resp <= 0) return failed('The operation failed, please try again');
+        if (!$this->model->where(['id' => $id])->update($param)) {
+            return failed('The operation failed, please try again');
+        }
 
         return success();
     }
@@ -142,8 +142,9 @@ class AdminService extends BasicService
 
         $param['is_delete'] = 1;
         $param['update_time'] = nowDate();
-        $resp = $this->model->where(['id' => $id])->update($param);
-        if ($resp <= 0) return failed('The operation failed, please try again');
+        if (!$this->model->where(['id' => $id])->update($param)) {
+            return failed('The operation failed, please try again');
+        }
         return success();
     }
 }

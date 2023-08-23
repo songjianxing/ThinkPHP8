@@ -12,7 +12,15 @@ class MenuValidate extends Validate
         'name|菜单名' => 'require|max:55',
     ];
 
+    protected $message = [
+        'id.require' => 'menu_id_require',
+        'pid.require' => 'menu_pid_require',
+        'name.require' => 'menu_name_require',
+        'name.max' => 'menu_name_max',
+    ];
+
     protected $scene = [
-        'add' => ['pid', 'name']
+        'save' => ['pid', 'name'],
+        'edit' => ['id', 'pid', 'name']
     ];
 }

@@ -46,7 +46,7 @@ class LoginService extends BasicService
         }
 
         // 验证用户是否禁用
-        if ($user['status'] == 2){
+        if ($user['status'] == 2) {
             return failed('This account has been disabled');
         }
 
@@ -64,7 +64,7 @@ class LoginService extends BasicService
         ]);
 
         // 获取权限菜单
-        $menu_list = (new MenuService)->getMyMenu($user['role_id']);
+        $menu_list = $this->myMenuList($user['role_id']);
 
         // 记录权限map后续校验用
         if ($user['id'] != 1) {
@@ -96,5 +96,41 @@ class LoginService extends BasicService
             ],
             'menu_list' => makeTree($menu_list),
         ]);
+    }
+
+    /**
+     * 获取我的权限菜单
+     * @param $role_id
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    protected function myMenuList($role_id): array
+    {
+        $order = ['sort' => 'desc'];
+        $field = ['id', 'pid', 'auth', 'type', 'name', 'path', 'icon', 'component'];
+        $menu_model = Db::name('menu')->field($field)->order($order);
+        if ($role_id == 1) {
+            $menu_model->where(['status' => 1]);
+        } else {
+            $role_ids = Db::name('role')->where(['id' => $role_id])->value('rule');
+            $role_arr = explode(',', $role_ids);
+            $menu_model->where([['status', '=', 1], ['id', 'in', $role_arr]]);
+        }
+        $menu_list = $menu_model->select()->toArray();
+
+        foreach ($menu_list as &$item) {
+            $item['meta'] = [
+                'type' => 'menu',
+                'icon' => $item['icon'],
+                'title' => $item['name'],
+                'hidden' => ($item['type'] == 2)
+            ];
+            if ($item['pid'] != 0) continue;
+            unset($item['component']);
+        }
+
+        return $menu_list;
     }
 }

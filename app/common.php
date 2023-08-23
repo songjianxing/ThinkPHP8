@@ -24,7 +24,7 @@ function failed(string $msg = 'failed', int $code = 0): array
 function success(array $data = [], int $code = 200): array
 {
     if (empty($data)) $data = new stdClass();
-    return ['code' => $code, 'msg' => 'success', 'data' => $data];
+    return ['code' => $code, 'msg' => lang('success'), 'data' => $data];
 }
 
 /**
@@ -97,25 +97,23 @@ function getHeaderToken(): string
  */
 function makeTree($data): array
 {
-    $resp = $tree = [];
+    $param = $tree = [];
     // 整理数组
-    foreach ($data as $vo) {
-        $resp[$vo['id']] = $vo;
+    foreach ($data as $item) {
+        $param[$item['id']] = $item;
     }
-    unset($data);
-
     // 查询子孙
-    foreach ($resp as $vo) {
-        if ($vo['pid'] == 0) continue;
-        $resp[$vo['pid']]['children'][] = &$vo;
+    foreach ($param as $key => $val) {
+        if ($val['pid'] == 0) continue;
+        $param[$val['pid']]['children'][] = &$param[$key];
+    }
+    // 去除杂质
+    foreach ($param as $item) {
+        if ($item['pid'] != 0) continue;
+        $tree[] = $item;
     }
 
-    // 去除杂质
-    foreach ($resp as $vo) {
-        if ($vo['pid'] != 0) continue;
-        $tree[] = $vo;
-    }
-    unset($resp);
+    unset($param, $data);
 
     return $tree;
 }

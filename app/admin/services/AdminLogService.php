@@ -8,15 +8,15 @@ use app\model\AdminLogModel;
 class AdminLogService extends BasicService
 {
 
-    public AdminLogModel $adminModel;
-
-    public function __construct(
-        App           $app,
-        AdminLogModel $model
-    )
+    /**
+     * 构造函数
+     * @param App $app
+     * @param AdminLogModel $model
+     */
+    public function __construct(App $app, AdminLogModel $model)
     {
         parent::__construct($app);
-        $this->adminModel = $model;
+        $this->model = $model;
     }
 
     /**
@@ -38,7 +38,7 @@ class AdminLogService extends BasicService
         if (!empty($user_name)) $where[] = ['username', '=', $user_name];
 
         $field = ['id', 'admin_id', 'username', 'url', 'title', 'data', 'ip', 'user_agent', 'create_time'];
-        $model = $this->adminModel->field($field)->where($where)->order(['id' => 'desc']);
+        $model = $this->model->field($field)->where($where)->order(['id' => 'desc']);
         $count = $model->count('id');
         $list = $model->page($page, $limit)->select()->toArray();
 

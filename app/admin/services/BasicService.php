@@ -6,16 +6,12 @@ namespace app\admin\services;
 use think\App;
 use think\Request;
 use helper\ValidateHelper;
-use think\helper;
-
 
 /**
  * 服务基础类
  */
 class BasicService
 {
-
-
 
     /**
      * 应用实例
@@ -58,7 +54,6 @@ class BasicService
     {
         $this->param = &$param;
     }
-
 
     /**
      * @param $key

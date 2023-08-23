@@ -4,8 +4,10 @@ namespace app\admin\controller;
 
 use think\App;
 use think\response\Json;
+use hg\apidoc\annotation as Apidoc;
 use app\admin\services\RoleService;
 
+#[Apidoc\Title('角色管理')]
 class Role extends Basic
 {
 
@@ -15,49 +17,87 @@ class Role extends Basic
         $this->service = $service;
     }
 
-    public function index(): Json
+    #[
+        Apidoc\Tag('列表'),
+        Apidoc\Method ('GET'),
+        Apidoc\Title('角色列表'),
+        Apidoc\Url ('/admin/role/list'),
+        Apidoc\Returned(name: 'list', type: 'object', desc: '数据列表', children: [
+            ['name' => 'id', 'type' => 'int', 'desc' => 'ID'],
+            ['name' => 'name', 'type' => 'string', 'desc' => '角色名'],
+            ['name' => 'rule', 'type' => 'array', 'desc' => '拥有的权限'],
+            ['name' => 'status', 'type' => 'int', 'desc' => '状态: 1 正常 2 禁用'],
+            ['name' => 'create_time', 'type' => 'datetime', 'desc' => '创建时间'],
+            ['name' => 'update_time', 'type' => 'datetime', 'desc' => '更新时间'],
+        ]),
+    ]
+    public function list(): Json
     {
-        $data = $this->service->getList(input('param.'));
+        $data = $this->service->list(input());
         return json($data);
     }
 
-    /**
-     * 获取全部角色
-     * @return Json
-     */
-    public function getAllRole(): Json
+    #[
+        Apidoc\Tag('获取'),
+        Apidoc\Method('GET'),
+        Apidoc\Title('获取所有角色'),
+        Apidoc\Url('/admin/role/all-role'),
+        Apidoc\Returned(name: 'list', type: 'object', desc: '数据列表', children: [
+            ['name' => 'id', 'type' => 'int', 'desc' => 'ID'],
+            ['name' => 'name', 'type' => 'string', 'desc' => '角色名'],
+            ['name' => 'rule', 'type' => 'string', 'desc' => '拥有的权限'],
+            ['name' => 'status', 'type' => 'int', 'desc' => '状态: 1 正常 2 禁用'],
+            ['name' => 'create_time', 'type' => 'datetime', 'desc' => '创建时间'],
+            ['name' => 'update_time', 'type' => 'datetime', 'desc' => '更新时间'],
+        ]),
+    ]
+    public function allRole(): Json
     {
-        $data = $this->service->getAllRoleList();
+        $data = $this->service->allRole();
         return json($data);
     }
 
-    /**
-     * 添加角色
-     * @return Json
-     */
-    public function add(): Json
+    #[
+        Apidoc\Tag('新增'),
+        Apidoc\Method('POST'),
+        Apidoc\Title('新增角色'),
+        Apidoc\Url('/admin/role/save'),
+        Apidoc\Param(name: 'name', type: 'string', require: true, desc: '角色名'),
+        Apidoc\Param(name: 'rule', type: 'array', desc: '权限ID'),
+        Apidoc\Param(name: 'status', type: 'int', desc: '状态: 1:启用 2:禁用'),
+    ]
+    public function save(): Json
     {
-        $data = $this->service->addRole(input('post.'));
+        $data = $this->service->save(input());
         return json($data);
     }
 
-    /**
-     * 编辑角色
-     * @return Json
-     */
+    #[
+        Apidoc\Tag('修改'),
+        Apidoc\Method('PUT'),
+        Apidoc\Title('修改角色'),
+        Apidoc\Url('/admin/role/edit/:id'),
+        Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
+        Apidoc\Param(name: 'name', type: 'string', require: true, desc: '角色名'),
+        Apidoc\Param(name: 'rule', type: 'array', desc: '权限ID'),
+        Apidoc\Param(name: 'status', type: 'int', desc: '状态: 1:启用 2:禁用'),
+    ]
     public function edit(): Json
     {
-        $data = $this->service->editRole(input('post.'));
+        $data = $this->service->editRole(input());
         return json($data);
     }
 
-    /**
-     * 删除角色
-     * @return Json
-     */
-    public function del(): Json
+    #[
+        Apidoc\Tag('删除'),
+        Apidoc\Method('DELETE'),
+        Apidoc\Title('删除角色'),
+        Apidoc\Url('/admin/role/delete/:id'),
+        Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
+    ]
+    public function delete(): Json
     {
-        $data = $this->service->delRole(input('param.id'));
+        $data = $this->service->delete(input());
         return json($data);
     }
 }

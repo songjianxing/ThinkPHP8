@@ -2,84 +2,107 @@
 
 namespace app\admin\services;
 
-use app\admin\model\RoleModel;
+use think\App;
+use app\model\RoleModel;
 use app\admin\validate\RoleValidate;
 use think\exception\ValidateException;
 
-class RoleService
+class RoleService extends BasicService
 {
+
     /**
-     * Notes: 获取角色列表
-     * Author: LJS
-     * @param $param
-     * @return array
+     * 构造函数
+     * @param App $app
+     * @param RoleModel $model
      */
-    public function getList($param): array
+    public function __construct(App $app, RoleModel $model)
     {
-        $where = [];
-        if (!empty($param['name'])) {
-            $where[] = ['name', '=', $param['name']];
-        }
-        $where[] = ['id', '>', 1];
-
-        try {
-            $roleModel = new RoleModel();
-            $list = $roleModel->where($where)->order('id desc')->paginate($param['limit']);
-            if (!empty($list)) {
-                foreach ($list as &$item) {
-                    $item['rule'] = explode(",", $item['rule']);
-                }
-            }
-
-            return pageReturn(dataReturn(0, 'success', $list));
-        } catch (\Exception $e) {
-            return dataReturn(-1, $e->getMessage());
-        }
+        parent::__construct($app);
+        $this->model = $model;
     }
 
     /**
      * 获取角色列表
+     * @param $param
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function getAllRoleList(): array
+    public function list($param): array
     {
-        $sysRoleModel = new RoleModel();
-        return $sysRoleModel->getAllList([['id', '>', 1]]);
+        $this->setParam($param);
+        $name = $this->getParam('name', '');
+        $page = $this->getParam('page', 1);
+        $limit = $this->getParam('limit', 20);
+
+        $where[] = ['id', '>', 1];
+        if (!empty($name)) $where[] = ['name', '=', $name];
+
+        $order = ['id' => 'desc'];
+        $field = ['id', 'name', 'rule', 'status', 'create_time', 'update_time'];
+        $model = $this->model->field($field)->where($where)->order($order);
+        $count = $model->count('id');
+        $list = $model->page($page, $limit)->select()->toArray();
+
+        foreach ($list as &$item) {
+            $item['rule'] = explode(',', $item['rule']);
+        }
+
+        return success(['page' => $page, 'limit' => $limit, 'count' => $count, 'list' => $list]);
+    }
+
+    /**
+     * 获取所有角色
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function allRole(): array
+    {
+        $order = ['id' => 'desc'];
+        $where = [['id', '>', 1]];
+        $field = ['id', 'name', 'rule', 'status', 'create_time', 'update_time'];
+        $list = $this->model->field($field)->where($where)->order($order)->select();
+        return success(['list' => $list]);
     }
 
     /**
      * 添加角色
      * @param $param
      * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
-    public function addRole($param): array
+    public function save($param): array
     {
         try {
-            validate(RoleValidate::class)->scene('add')->check($param);
+            validate(RoleValidate::class)->scene('save')->check($param);
         } catch (ValidateException $e) {
-            return dataReturn(-1, $e->getError());
+            return failed($e->getError());
         }
+        $this->setParam($param);
+        $rule = $this->getParam('rule', []);
+        $name = $this->getParam('name', '');
 
         // 检查唯一
-        $roleModel = new RoleModel();
-        $has = $roleModel->checkUnique(['name' => $param['name']])['data'];
-        if (! empty($has)) {
-            return dataReturn(-2, '该角色名已存在');
-        }
-        $param['create_time'] = now();
-        $param['rule'] = join(",", $param['rule']);
-
-        $res = $roleModel->insertOne($param);
-        if ($res['code'] != 0) {
-            return $res;
+        if ($this->model->where(['name' => $name])->find()) {
+            return failed('The role name already exists');
         }
 
-        return dataReturn(0, '添加成功');
+        $param['rule'] = join(',', $rule);
+        $param['create_time'] = $param['update_time'] = nowDate();
+
+        if (!$this->model->insert($param)) {
+            return failed('The operation failed, please try again');
+        }
+        return success();
     }
 
     /**
-     * Notes: 编辑角色
-     * Author: LJS
+     * 编辑角色
      * @param $param
      * @return array
      */
@@ -88,34 +111,37 @@ class RoleService
         try {
             validate(RoleValidate::class)->scene('edit')->check($param);
         } catch (ValidateException $e) {
-            return dataReturn(-1, $e->getError());
-        }
-        // 检查唯一
-        $roleModel = new RoleModel();
-        $param['update_time'] = now();
-        $param['rule'] = join(",", $param['rule']);
-
-        $res = $roleModel->updateById($param, $param['id']);
-        if ($res['code'] != 0) {
-            return $res;
+            return failed($e->getError());
         }
 
-        return dataReturn(0, '编辑成功');
+        $this->setParam($param);
+        $id = $this->getParam('id', 0);
+
+        $param['update_time'] = nowDate();
+        $param['rule'] = join(',', $param['rule']);;
+
+        if (!$this->model->where(['id' => $id])->update($param)) {
+            return failed('The operation failed, please try again');
+        }
+
+        return success();
     }
 
     /**
-     * Notes: 删除角色
-     * Author: LJS
-     * @param $id
+     * 删除角色
+     * @param $param
      * @return array
      */
-    public function delRole($id): array
+    public function delete($param): array
     {
+        $this->setParam($param);
+        $id = $this->getParam('id', 0);
         if ($id == 1) {
-            return dataReturn(-1, '不可以删除超级管理员角色');
+            return failed('The Super Admin role cannot be deleted');
         }
-
-        $roleModel = new RoleModel();
-        return $roleModel->delById($id);
+        if (!$this->model->where(['id' => $id])->delete()) {
+            return failed('The operation failed, please try again');
+        }
+        return success();
     }
 }
