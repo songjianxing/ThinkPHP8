@@ -9,7 +9,8 @@ class LoginValidate extends Validate
     protected $rule = [
         'username|登录账号' => 'require|max:55',
         'password|密码' => 'require|max:32',
-        'code|验证码' => 'require'
+        'code|验证码' => 'require',
+        'key|签名' => 'require'
     ];
 
     protected $message = [
@@ -18,5 +19,6 @@ class LoginValidate extends Validate
         'password.max' => 'login_password_max',
         'password.require' => 'login_password_require',
         'code.require' => 'login_code_require',
+        'key.require' => 'login_key_require',
     ];
 }

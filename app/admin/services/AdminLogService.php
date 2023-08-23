@@ -2,67 +2,51 @@
 
 namespace app\admin\services;
 
-use app\admin\model\AdminLog;
-use function app\admin\service\log\dataReturn;
-use function app\admin\service\log\now;
-use function app\admin\service\log\pageReturn;
+use think\App;
+use app\model\AdminLogModel;
 
-class AdminLogService
+class AdminLogService extends BasicService
 {
-    /**
-     * 写操作日志
-     * @param $param
-     * @param $data
-     * @return array
-     */
-//    public function write($param, $data): array
-//    {
-//        if (empty($data)) {
-//            return dataReturn(0);
-//        }
-//
-//        if (empty($param)) {
-//            $userInfo = getJWT(getHeaderToken());
-//            if (empty($userInfo)) {
-//                return dataReturn(0);
-//            }
-//            $param['admin_id'] = $userInfo['id'];
-//            $param['username'] = $userInfo['nickname'];
-//            $param['title'] = '后台操作';
-//        }
-//
-//        $param['url'] = request()->controller() . '/' . request()->action();
-//        $param['ip'] = request()->ip();
-//        $param['data'] = $data;
-//        $param['user_agent'] = isset(request()->header()['user-agent']) ? request()->header()['user-agent'] : '';
-//        $param['create_time'] = now();
-//
-//        $sysAdminLogModel = new SysAdminLog();
-//        $sysAdminLogModel->insert($param);
-//
-//        return dataReturn(0);
-//    }
 
-    /**
-     * Notes: 管理员日志列表
-     * Author: LJS
-     * @param $param
-     * @return array
-     */
-    public function getList($param): array
+    public AdminLogModel $adminModel;
+
+    public function __construct(
+        App           $app,
+        AdminLogModel $model
+    )
     {
+        parent::__construct($app);
+        $this->adminModel = $model;
+    }
+
+    /**
+     * 管理员日志列表
+     * @param $param
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function adminList($param): array
+    {
+        $this->setParam($param);
+        $page = $this->getParam('page', 1);
+        $limit = $this->getParam('limit', 20);
+        $user_name = $this->getParam('username', '');
+
         $where = [];
-        if (!empty($param['username'])) {
-            $where[] = ['username', '=', $param['username']];
-        }
+        if (!empty($user_name)) $where[] = ['username', '=', $user_name];
 
-        try {
-            $adminLogModel = new SysAdminLog();
-            $list = $adminLogModel->where($where)->order('id desc')->paginate($param['limit']);
+        $field = ['id', 'admin_id', 'username', 'url', 'title', 'data', 'ip', 'user_agent', 'create_time'];
+        $model = $this->adminModel->field($field)->where($where)->order(['id' => 'desc']);
+        $count = $model->count('id');
+        $list = $model->page($page, $limit)->select()->toArray();
 
-            return pageReturn(dataReturn(0, 'success', $list));
-        } catch (\Exception $e) {
-            return dataReturn(-1, $e->getMessage());
-        }
+        return success([
+            'list' => $list,
+            'page' => $page,
+            'limit' => $limit,
+            'count' => $count,
+        ]);
     }
 }

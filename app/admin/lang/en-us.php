@@ -30,4 +30,5 @@ return [
     'login_password_max' => 'Login password cannot exceed 32 characters',
     'login_password_require' => 'Login password cannot be empty',
     'login_code_require' => 'Login verification code cannot be empty',
+    'login_key_require' => 'Verification code signature cannot be empty',
 ];

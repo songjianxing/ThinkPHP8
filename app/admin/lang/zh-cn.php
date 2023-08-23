@@ -30,4 +30,5 @@ return [
     'login_password_max' => '登录密码不能超出32字符',
     'login_password_require' => '登录密码不能为空',
     'login_code_require' => '登录验证码不能为空',
+    'login_key_require' => '验证码签名不能为空',
 ];
