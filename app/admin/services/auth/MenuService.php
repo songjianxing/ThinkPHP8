@@ -1,11 +1,12 @@
 <?php
 
-namespace app\admin\services;
+namespace app\admin\services\auth;
 
 use think\App;
 use app\model\MenuModel;
-use app\admin\validate\MenuValidate;
+use app\admin\services\BasicService;
 use think\exception\ValidateException;
+use app\admin\validate\auth\MenuValidate;
 
 class MenuService extends BasicService
 {

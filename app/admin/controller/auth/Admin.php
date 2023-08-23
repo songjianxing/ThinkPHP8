@@ -1,16 +1,16 @@
 <?php
 
-namespace app\admin\controller;
+namespace app\admin\controller\auth;
 
 use think\App;
 use think\response\Json;
+use app\admin\controller\Basic;
 use hg\apidoc\annotation as Apidoc;
-use app\admin\services\AdminService;
+use app\admin\services\auth\AdminService;
 
 #[Apidoc\Title('管理员管理')]
 class Admin extends Basic
 {
-
     /**
      * 构造函数
      * @param App $app
@@ -26,7 +26,7 @@ class Admin extends Basic
         Apidoc\Tag('列表'),
         Apidoc\Method ('GET'),
         Apidoc\Title('管理员列表'),
-        Apidoc\Url ('/admin/admin/list'),
+        Apidoc\Url ('/admin/auth/admin/list'),
         Apidoc\Query(name: 'page', type: 'int', require: true, default: 1, desc: '页码'),
         Apidoc\Query(name: 'limit', type: 'int', require: true, default: 20, desc: '每页数量'),
         Apidoc\Query(name: 'username', type: 'string', desc: '管理员账号'),
@@ -65,7 +65,7 @@ class Admin extends Basic
         Apidoc\Tag('新增'),
         Apidoc\Method('POST'),
         Apidoc\Title('新增管理员'),
-        Apidoc\Url('/admin/admin/save'),
+        Apidoc\Url('/admin/auth/admin/save'),
         Apidoc\Param(name: 'role_id', type: 'int', require: true, desc: '角色'),
         Apidoc\Param(name: 'username', type: 'string', require: true, desc: '账号'),
         Apidoc\Param(name: 'password', type: 'string', require: true, desc: '密码'),
@@ -83,7 +83,7 @@ class Admin extends Basic
         Apidoc\Tag('修改'),
         Apidoc\Method('PUT'),
         Apidoc\Title('修改管理员'),
-        Apidoc\Url('/admin/admin/edit/:id'),
+        Apidoc\Url('/admin/auth/admin/edit/:id'),
         Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
         Apidoc\Param(name: 'role_id', type: 'int', require: true, desc: '角色'),
         Apidoc\Param(name: 'username', type: 'string', require: true, desc: '账号'),
@@ -102,7 +102,7 @@ class Admin extends Basic
         Apidoc\Tag('删除'),
         Apidoc\Method('DELETE'),
         Apidoc\Title('删除管理员'),
-        Apidoc\Url('/admin/admin/delete/:id'),
+        Apidoc\Url('/admin/auth/admin/delete/:id'),
         Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
     ]
     public function delete(): Json

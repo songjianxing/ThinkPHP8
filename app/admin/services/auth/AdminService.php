@@ -1,14 +1,20 @@
 <?php
 
-namespace app\admin\services;
+namespace app\admin\services\auth;
 
 use think\App;
 use app\model\AdminModel;
-use app\admin\validate\AdminValidate;
+use app\admin\services\BasicService;
 use think\exception\ValidateException;
+use app\admin\validate\auth\AdminValidate;
 
 class AdminService extends BasicService
 {
+    /**
+     * 构造函数
+     * @param App $app
+     * @param AdminModel $model
+     */
     public function __construct(App $app, AdminModel $model)
     {
         parent::__construct($app);

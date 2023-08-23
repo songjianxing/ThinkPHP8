@@ -3,9 +3,12 @@
 use think\facade\Route;
 
 /**
- * 日志管理
+ * 日志模块
  */
 Route::group('/logs', function () {
-    // 获取管理员日志列表
-    Route::get('/admin-list', '/admin/Logs/adminList');
+    // 日志管理
+    Route::group('/admin', function () {
+        // 获取管理员日志列表
+        Route::get('/list', '/admin/logs.Logs/adminList');
+    });
 });

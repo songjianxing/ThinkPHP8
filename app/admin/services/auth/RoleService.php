@@ -1,11 +1,12 @@
 <?php
 
-namespace app\admin\services;
+namespace app\admin\services\auth;
 
 use think\App;
 use app\model\RoleModel;
-use app\admin\validate\RoleValidate;
+use app\admin\services\BasicService;
 use think\exception\ValidateException;
+use app\admin\validate\auth\RoleValidate;
 
 class RoleService extends BasicService
 {

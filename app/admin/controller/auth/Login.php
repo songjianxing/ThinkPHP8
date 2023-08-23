@@ -1,13 +1,13 @@
 <?php
 
-namespace app\admin\controller;
+namespace app\admin\controller\auth;
 
+use app\admin\services\auth\LoginService;
+use basics\BaseController;
+use hg\apidoc\annotation as Apidoc;
 use think\App;
 use think\response\Json;
 use utils\captcha\Captcha;
-use basics\BaseController;
-use hg\apidoc\annotation as Apidoc;
-use app\admin\services\LoginService;
 
 #[Apidoc\Title('后台登录')]
 class Login extends BaseController
@@ -27,7 +27,7 @@ class Login extends BaseController
         Apidoc\Tag('登录'),
         Apidoc\Method('POST'),
         Apidoc\Title('登录后台'),
-        Apidoc\Url('/admin/login/login'),
+        Apidoc\Url('/admin/auth/login/login'),
         Apidoc\Param(name: 'key', type: 'string', require: true, desc: '验签'),
         Apidoc\Param(name: 'code', type: 'string', require: true, desc: '验证码'),
         Apidoc\Param(name: 'username', type: 'string', require: true, desc: '账户'),
@@ -43,7 +43,7 @@ class Login extends BaseController
         Apidoc\Tag('验证码'),
         Apidoc\Method('GET'),
         Apidoc\Title('获取登录验证码'),
-        Apidoc\Url('/admin/login/captcha'),
+        Apidoc\Url('/admin/auth/login/captcha'),
         Apidoc\Returned(name: 'key', type: 'string', require: true, desc: '验证Key'),
         Apidoc\Returned(name: 'img', type: 'string', require: true, desc: '图片Base64'),
     ]

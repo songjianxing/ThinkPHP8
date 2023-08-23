@@ -1,9 +1,10 @@
 <?php
 
-namespace app\admin\services;
+namespace app\admin\services\logs;
 
 use think\App;
 use app\model\AdminLogModel;
+use app\admin\services\BasicService;
 
 class AdminLogService extends BasicService
 {

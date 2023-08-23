@@ -1,15 +1,14 @@
 <?php
 
-namespace app\admin\services;
+namespace app\admin\services\auth;
 
 use think\facade\Db;
-use utils\captcha\Captcha;
-use app\admin\validate\LoginValidate;
+use app\admin\services\BasicService;
 use think\exception\ValidateException;
+use app\admin\validate\auth\LoginValidate;
 
 class LoginService extends BasicService
 {
-
     /**
      * 管理员登录
      * @param $param

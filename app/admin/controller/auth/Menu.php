@@ -1,11 +1,12 @@
 <?php
 
-namespace app\admin\controller;
+namespace app\admin\controller\auth;
 
 use think\App;
 use think\response\Json;
+use app\admin\controller\Basic;
 use hg\apidoc\annotation as Apidoc;
-use app\admin\services\MenuService;
+use app\admin\services\auth\MenuService;
 
 #[Apidoc\Title('菜单管理')]
 class Menu extends Basic
@@ -25,7 +26,7 @@ class Menu extends Basic
         Apidoc\Tag('列表'),
         Apidoc\Method ('GET'),
         Apidoc\Title('菜单列表'),
-        Apidoc\Url ('/admin/menu/list'),
+        Apidoc\Url ('/admin/auth/menu/list'),
         Apidoc\Returned(name: 'list', type: 'object', desc: '数据列表', children: [
             ['name' => 'id', 'type' => 'int', 'desc' => 'ID'],
             ['name' => 'pid', 'type' => 'int', 'desc' => '上级菜单'],
@@ -60,7 +61,7 @@ class Menu extends Basic
         Apidoc\Tag('获取'),
         Apidoc\Method('GET'),
         Apidoc\Title('获取所有菜单'),
-        Apidoc\Url('/admin/menu/all-menu'),
+        Apidoc\Url('/admin/auth/menu/all-menu'),
         Apidoc\Returned(name: 'list', type: 'object', desc: '数据列表', children: [
             ['name' => 'id', 'type' => 'int', 'desc' => 'ID'],
             ['name' => 'pid', 'type' => 'int', 'desc' => '上级菜单'],
@@ -84,7 +85,7 @@ class Menu extends Basic
         Apidoc\Tag('新增'),
         Apidoc\Method('POST'),
         Apidoc\Title('新增菜单'),
-        Apidoc\Url('/admin/menu/save'),
+        Apidoc\Url('/admin/auth/menu/save'),
         Apidoc\Param(name: 'pid', type: 'int', require: true, desc: '父级ID'),
         Apidoc\Param(name: 'name', type: 'string', require: true, desc: '标题'),
         Apidoc\Param(name: 'sort', type: 'int', desc: '排序'),
@@ -105,7 +106,7 @@ class Menu extends Basic
         Apidoc\Tag('修改'),
         Apidoc\Method('PUT'),
         Apidoc\Title('修改菜单'),
-        Apidoc\Url('/admin/menu/edit/:id'),
+        Apidoc\Url('/admin/auth/menu/edit/:id'),
         Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
         Apidoc\Param(name: 'pid', type: 'int', require: true, desc: '父级ID'),
         Apidoc\Param(name: 'name', type: 'string', require: true, desc: '标题'),
@@ -127,7 +128,7 @@ class Menu extends Basic
         Apidoc\Tag('删除'),
         Apidoc\Method('DELETE'),
         Apidoc\Title('删除菜单'),
-        Apidoc\Url('/admin/menu/delete/:id'),
+        Apidoc\Url('/admin/auth/menu/delete/:id'),
         Apidoc\Query(name: 'id', type: 'int', require: true, desc: 'ID'),
     ]
     public function delete(): Json

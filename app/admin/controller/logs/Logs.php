@@ -1,16 +1,16 @@
 <?php
 
-namespace app\admin\controller;
+namespace app\admin\controller\logs;
 
 use think\App;
 use think\response\Json;
+use app\admin\controller\Basic;
 use hg\apidoc\annotation as Apidoc;
-use app\admin\services\AdminLogService;
+use app\admin\services\logs\AdminLogService;
 
 #[Apidoc\Title('日志管理')]
 class Logs extends Basic
 {
-
     /**
      * 构造函数
      * @param App $app
@@ -26,7 +26,7 @@ class Logs extends Basic
         Apidoc\Tag('列表'),
         Apidoc\Method ('GET'),
         Apidoc\Title('管理员日志列表'),
-        Apidoc\Url ('/admin/logs/admin-list'),
+        Apidoc\Url ('/admin/logs/admin/list'),
         Apidoc\Query(name: 'page', type: 'int', require: true, default: 1, desc: '页码'),
         Apidoc\Query(name: 'limit', type: 'int', require: true, default: 20, desc: '每页数量'),
         Apidoc\Query(name: 'username', type: 'string', desc: '管理员账号'),
